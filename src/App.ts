@@ -33,6 +33,7 @@ class App extends Application {
         // @ts-ignore
         document.body.appendChild(this.view);
 
+        globalThis.__PIXI_APP__ = this;
         if (process.env.NODE_ENV !== 'production') {
             this.initStats();
             this.initLego();
