@@ -20,6 +20,12 @@ type SpineFiles = {
     preMultipliedAlpha?: boolean;
 };
 
+type BoxModelConfig = {
+    i: number;
+    j: number;
+    elements: ITEM_TYPE[] | string[];
+};
+
 declare namespace GlobalMixins {
     interface DisplayObjectEvents {
         hideComplete: [string];
