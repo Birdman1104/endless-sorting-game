@@ -41,7 +41,7 @@ export class BoardView extends Container {
         this.blackBlocker.drawRect(x, y, width, height);
         this.blackBlocker.endFill();
         this.blackBlocker.eventMode = 'static';
-        this.blackBlocker.on('pointerdown', this.onDragStart);
+        this.blackBlocker.on('pointerdown', (e) => this.onDragStart(e));
         this.blackBlocker.alpha = 0.2;
         this.addChild(this.blackBlocker);
     }
@@ -78,15 +78,18 @@ export class BoardView extends Container {
     private setDragEvents(): void {}
 
     private onDragStart(e: any): void {
-        console.warn(1234);
-
-        // const item = this.items.find((i) => i.containsPoint(e.data.global));
-        // if (item) {
-        //     item.startDrag();
-        //     this.addChild(item);
-        //     item.on('pointermove', this.onDragMove);
-        //     item.on('pointerup', this.onDragEnd);
-        //     item.on('pointerupoutside', this.onDragEnd);
-        // }
+        if (this.items.length === 0) return;
+        const { x, y } = this.toLocal(e.data.global);
+        const item = this.items.find(
+            (i) =>
+                x >= i.x - i.width / 2 && x <= i.x + i.width / 2 && y >= i.y - i.height / 2 && y <= i.y + i.height / 2,
+        );
+        console.warn(item);
+        if (item) {
+            this.blackBlocker.on('pointermove', (e) => {
+                const { x, y } = this.toLocal(e.data.global);
+                item.position.set(x, y);
+            });
+        }
     }
 }

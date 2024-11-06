@@ -1,4 +1,4 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container, Point, Sprite } from 'pixi.js';
 import { ItemModel, ItemType } from '../models/ItemModel';
 import { DropDownAreaInfo } from '../utils/DropDownAreaInfo';
 
@@ -27,6 +27,19 @@ export class ItemView extends Container {
 
     get area(): DropDownAreaInfo | null {
         return this.dropArea;
+    }
+
+    public contains(p: Point): boolean {
+        const { x, y } = this.toLocal(this.sprite.position);
+        // const { x, y, width, height } = this.sprite.getBounds();
+        // const { x, y, width, height } = this.sprite.getBounds();
+        console.log(p.x, p.y, x, y);
+        return (
+            p.x >= x - this.width / 2 &&
+            p.x <= x + this.width / 2 &&
+            p.y >= y - this.height / 2 &&
+            p.y <= y + this.height / 2
+        );
     }
 
     public setOriginalPosition(x: number, y: number): void {
