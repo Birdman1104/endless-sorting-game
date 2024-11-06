@@ -3,7 +3,7 @@ import { PixiStatsPlugin } from '@armathai/pixi-stats';
 import { Application, Assets } from 'pixi.js';
 import PixiStage from './MainStage';
 import SoundController from './SoundController';
-import { fitDimension } from './Utils';
+import { fitDimension, getModalSize } from './Utils';
 import { assets } from './assets/assetsNames/assets';
 import { atlases } from './assets/assetsNames/atlas';
 import { fonts } from './assets/assetsNames/fonts';
@@ -29,21 +29,23 @@ class App extends Application {
     public async init(): Promise<void> {
         this.stage = new PixiStage();
         // @ts-ignore
-        this.view.classList.add('app');
+        this.view.classList.add('birdman-game-css');
+        const div = document.getElementsByClassName('birdman-game')[0];
+
         // @ts-ignore
-        document.body.appendChild(this.view);
+        div.appendChild(this.view);
 
         globalThis.__PIXI_APP__ = this;
         if (process.env.NODE_ENV !== 'production') {
             this.initStats();
-            this.initLego();
+            // this.initLego();
         }
         await this.loadAssets();
         this.onLoadComplete();
     }
 
     public appResize(): void {
-        const { clientWidth: w, clientHeight: h } = document.body;
+        const { width: w, height: h } = getModalSize();
         if (w === 0 || h === 0) return;
 
         const { min, max } = ScreenSizeConfig.size.ratio;

@@ -1,5 +1,5 @@
 import { lego } from '@armathai/lego';
-import { Container, Point, Rectangle } from 'pixi.js';
+import { Container, Graphics, Point, Rectangle } from 'pixi.js';
 import { BoardModelEvents } from '../events/ModelEvents';
 import { BoxModel } from '../models/BoxModel';
 import { DropDownAreaInfo } from '../utils/DropDownAreaInfo';
@@ -9,6 +9,8 @@ import { ItemView } from './ItemView';
 export class BoardView extends Container {
     private boxes: BoxView[] = [];
     private items: ItemView[] = [];
+
+    private blackBlocker: Graphics;
 
     constructor() {
         super();
@@ -28,7 +30,20 @@ export class BoardView extends Container {
     }
 
     private build(): void {
-        //
+        this.buildBlackBlocker();
+        this.setDragEvents();
+    }
+
+    private buildBlackBlocker(): void {
+        const { x, y, width, height } = this.getBounds();
+        this.blackBlocker = new Graphics();
+        this.blackBlocker.beginFill(0x000000, 1);
+        this.blackBlocker.drawRect(x, y, width, height);
+        this.blackBlocker.endFill();
+        this.blackBlocker.eventMode = 'static';
+        this.blackBlocker.on('pointerdown', this.onDragStart);
+        this.blackBlocker.alpha = 0.2;
+        this.addChild(this.blackBlocker);
     }
 
     private onBoxesUpdate(data: BoxModel[]): void {
@@ -44,31 +59,34 @@ export class BoardView extends Container {
             this.addChild(box);
         });
 
-        console.warn(this.dropAreas);
-
         data.forEach((box, j) => {
             box.elements.forEach((element, i) => {
                 const dropArea = this.dropAreas[j * 3 + i];
-                console.warn(dropArea.centerX, dropArea.centerY, j * 3 + i);
                 const { x, y } = this.toLocal(new Point(dropArea.centerX, dropArea.centerY));
                 const item = new ItemView(element);
                 item.position.set(x, y);
                 dropArea.setItem(item);
                 item.setArea(dropArea);
                 item.setOriginalPosition(x, y);
-                // this.setDragEvents(item);
                 this.items.push(item);
             });
         });
 
         this.items.forEach((item) => this.addChild(item));
-        // for (let i = 0; i < 3; i++) {
-        //     for (let j = 0; j < 3; j++) {
-        //         const box = new BoxView(i, j, `${i}-${j}`);
-        //         box.x = ;
-        //         box.y = ;
-        //         this.addChild(box);
-        //     }
+    }
+
+    private setDragEvents(): void {}
+
+    private onDragStart(e: any): void {
+        console.warn(1234);
+
+        // const item = this.items.find((i) => i.containsPoint(e.data.global));
+        // if (item) {
+        //     item.startDrag();
+        //     this.addChild(item);
+        //     item.on('pointermove', this.onDragMove);
+        //     item.on('pointerup', this.onDragEnd);
+        //     item.on('pointerupoutside', this.onDragEnd);
         // }
     }
 }

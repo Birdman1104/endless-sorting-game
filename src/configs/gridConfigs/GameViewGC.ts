@@ -1,11 +1,13 @@
-import { lp } from '../../Utils';
+import { getModalSize, lp } from '../../Utils';
 
 export const getGameViewGridConfig = () => {
     return lp(getGameViewGridLandscapeConfig, getGameViewGridPortraitConfig).call(null);
 };
 
 const getGameViewGridLandscapeConfig = () => {
-    const bounds = { x: 0, y: 0, width: document.body.clientWidth, height: document.body.clientHeight };
+    const { width, height } = getModalSize();
+    const bounds = { x: 0, y: 0, width, height };
+
     return {
         name: 'game',
         debug: { color: 0xd9ff27 },
@@ -20,7 +22,9 @@ const getGameViewGridLandscapeConfig = () => {
 };
 
 const getGameViewGridPortraitConfig = () => {
-    const bounds = { x: 0, y: 0, width: document.body.clientWidth, height: document.body.clientHeight };
+    const { width, height } = getModalSize();
+    const bounds = { x: 0, y: 0, width, height };
+
     return {
         name: 'game',
         debug: { color: 0xd9ff27 },

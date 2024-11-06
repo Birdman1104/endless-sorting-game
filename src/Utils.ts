@@ -1,7 +1,7 @@
-import { Container, Graphics } from 'pixi.js';
+import { Container, Graphics, Text } from 'pixi.js';
 
 export const lp = (l, p) => {
-    const { clientWidth: w, clientHeight: h } = document.body;
+    const { width: w, height: h } = getModalSize();
     return w > h ? l : p;
 };
 
@@ -72,4 +72,80 @@ export const shuffle = (arr: any[]): void => {
         arr[i] = arr[j];
         arr[j] = temp;
     }
+};
+
+export const hasOwnProperty = <X extends Record<string, unknown>, Y extends PropertyKey>(
+    obj: X,
+    prop: Y,
+): obj is X & Record<Y, unknown> => {
+    return Object.prototype.hasOwnProperty.call(obj, prop);
+};
+
+export const getValueOfKey = <T, K extends keyof T>(obj: T, key: K): T[K] => obj[key];
+
+export const upperPowerOfTwo = (v: number): number => {
+    v--;
+    v |= v >> 1;
+    v |= v >> 2;
+    v |= v >> 4;
+    v |= v >> 8;
+    v |= v >> 16;
+    v++;
+    return v;
+};
+
+export const drawPoint = (
+    container: any,
+    x: number,
+    y: number,
+    color = 0xffffff * Math.random(),
+    alpha = 0.5,
+): Graphics => {
+    const gr = new Graphics();
+    gr.beginFill(color, alpha);
+    gr.drawCircle(x, y, 12);
+    gr.endFill();
+    container.addChild(gr);
+    return gr;
+};
+
+export const fitText = (textGameObject: Text, width: number, height: number) => {
+    const { width: textWidth, height: textHeight } = textGameObject;
+    const { fontSize } = textGameObject.style;
+    const ratioW = width ? width / textWidth : 1;
+    const ratioH = height ? height / textHeight : 1;
+    const ratio = Math.min(Math.min(ratioW, ratioH), 1);
+
+    if (typeof fontSize === 'number') {
+        const newFontSize = fontSize * ratio;
+        textGameObject.style.fontSize = newFontSize;
+    }
+};
+
+export const sample = (arr: any[]): any => {
+    return arr[Math.floor(Math.random() * arr.length)];
+};
+
+export const difference = (arrA: any[], arrB: any[]): any[] => {
+    return arrA.filter((x) => !arrB.includes(x));
+};
+
+export const convertMilliseconds = (ms: number): string => {
+    const minutes = Math.floor(ms / 60000);
+    const seconds = Math.floor((ms % 60000) / 1000);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+};
+
+export const getWindowSize = (): { width: number; height: number } => {
+    const { innerWidth: width, innerHeight: height } = window;
+    return { width, height };
+};
+
+export const getModalSize = (): { width: number; height: number } => {
+    // get width and height of element with id birdmanModalGame
+    const modal = document.getElementById('birdmanModalGame');
+    if (!modal) return { width: 0, height: 0 };
+    const width = modal.offsetWidth;
+    const height = modal.offsetHeight;
+    return { width, height };
 };

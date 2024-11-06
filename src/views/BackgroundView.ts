@@ -18,6 +18,6 @@ export class BackgroundView extends PixiGrid {
 
     private build(): void {
         const bkg = Sprite.from('bkg.jpg');
-        this.setChild('background', bkg);
+        this.setChild('bkg', bkg);
     }
 }
