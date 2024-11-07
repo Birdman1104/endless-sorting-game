@@ -7,7 +7,7 @@
         "start": "npm run generateAssets && npm run generateEventNames && webpack serve --config webpack/webpack.dev.js",
         "generateEventNames": "node nodeScripts/GenerateEventNames.js",
         "generateAssets": "node nodeScripts/GenerateAssets.js",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "build": "webpack --config webpack/webpack.prod.js"
     },
     "author": "Birdman",
     "license": "ISC",
