@@ -59,6 +59,23 @@ export const drawBounds = (gameObject: Container, color = 0xffffff * Math.random
     return gr;
 };
 
+export const drawRect = (
+    gameObject: Container,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    color = 0xffffff * Math.random(),
+    alpha = 0.5,
+): Graphics => {
+    const gr = new Graphics();
+    gr.beginFill(color, alpha);
+    gr.drawRect(x, y, width, height);
+    gr.endFill();
+    gameObject.addChild(gr);
+    return gr;
+};
+
 export const randomInt = (min: number, max: number): number => {
     const mi = Math.ceil(min);
     const ma = Math.floor(max);

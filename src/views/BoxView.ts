@@ -1,4 +1,4 @@
-import { Container, Point, Rectangle, Sprite } from 'pixi.js';
+import { Container, Rectangle, Sprite } from 'pixi.js';
 import { DropDownAreaInfo } from '../utils/DropDownAreaInfo';
 
 export class BoxView extends Container {
@@ -11,15 +11,11 @@ export class BoxView extends Container {
 
     get dropAreas(): DropDownAreaInfo[] {
         return this.areas.map((area) => {
-            const { x: startX, y: startY } = this.toGlobal(
-                new Point(area.x - area.width / 2, area.y - area.height / 2),
-            );
-            const { x: endX, y: endY } = this.toGlobal(new Point(area.x + area.width / 2, area.y + area.height / 2));
             return new DropDownAreaInfo({
-                startX,
-                startY,
-                endX,
-                endY,
+                startX: this.x + area.x - area.width / 2,
+                startY: this.y + area.y - area.height / 2,
+                endX: this.x + area.x + area.width / 2,
+                endY: this.y + area.y + area.height / 2,
                 insertedItem: null,
             });
         });
