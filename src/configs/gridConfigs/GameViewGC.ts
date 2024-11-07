@@ -10,7 +10,7 @@ const getGameViewGridLandscapeConfig = () => {
 
     return {
         name: 'game',
-        debug: { color: 0xd9ff27 },
+        // debug: { color: 0xd9ff27 },
         bounds,
         cells: [
             {
@@ -27,7 +27,7 @@ const getGameViewGridPortraitConfig = () => {
 
     return {
         name: 'game',
-        debug: { color: 0xd9ff27 },
+        // debug: { color: 0xd9ff27 },
         bounds,
         cells: [
             {

@@ -10,7 +10,7 @@ const getUIGridLandscapeConfig = () => {
 
     return {
         name: 'ui',
-        debug: { color: 0xd950ff },
+        // debug: { color: 0xd950ff },
         bounds,
         cells: [
             {
@@ -27,7 +27,7 @@ const getUIGridPortraitConfig = () => {
 
     return {
         name: 'ui',
-        debug: { color: 0xd950ff },
+        // debug: { color: 0xd950ff },
         bounds,
         cells: [
             {

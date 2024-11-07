@@ -17,7 +17,7 @@ class App extends Application {
 
     public constructor() {
         super({
-            backgroundColor: 0xffffff,
+            backgroundColor: 0x96d6dc,
             backgroundAlpha: 1,
             powerPreference: 'high-performance',
             antialias: true,

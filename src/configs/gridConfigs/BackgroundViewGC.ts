@@ -11,12 +11,12 @@ const getBackgroundGridLandscapeConfig = () => {
 
     return {
         name: 'background',
-        debug: { color: 0xd95027 },
+        // debug: { color: 0xd95027 },
         bounds,
         cells: [
             {
                 name: 'bkg',
-                scale: CellScale.envelop,
+                scale: CellScale.fill,
                 bounds: { x: 0, y: 0, width: 1, height: 1 },
             },
         ],
@@ -29,12 +29,12 @@ const getBackgroundGridPortraitConfig = () => {
 
     return {
         name: 'background',
-        debug: { color: 0xd95027 },
+        // debug: { color: 0xd95027 },
         bounds,
         cells: [
             {
                 name: 'bkg',
-                scale: CellScale.envelop,
+                scale: CellScale.fill,
                 bounds: { x: 0, y: 0, width: 1, height: 1 },
             },
         ],

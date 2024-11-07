@@ -1,6 +1,7 @@
 import { lego } from '@armathai/lego';
-import { MainGameEvents } from '../events/MainEvents';
+import { BoardEvents, MainGameEvents } from '../events/MainEvents';
 import Head from '../models/HeadModel';
+import { onMatchCommand } from './commands/BoardCommands';
 
 export const mapCommands = () => {
     eventCommandPairs.forEach(({ event, command }) => {
@@ -23,5 +24,9 @@ const eventCommandPairs = Object.freeze([
     {
         event: MainGameEvents.MainViewReady,
         command: onMainViewReadyCommand,
+    },
+    {
+        event: BoardEvents.Match,
+        command: onMatchCommand,
     },
 ]);

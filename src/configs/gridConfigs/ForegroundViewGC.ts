@@ -10,7 +10,7 @@ const getForegroundGridLandscapeConfig = () => {
 
     return {
         name: 'foreground',
-        debug: { color: 0xff5027 },
+        // debug: { color: 0xff5027 },
         bounds,
         cells: [
             {
@@ -27,7 +27,7 @@ const getForegroundGridPortraitConfig = () => {
 
     return {
         name: 'foreground',
-        debug: { color: 0xff5027 },
+        // debug: { color: 0xff5027 },
         bounds,
         cells: [
             {
