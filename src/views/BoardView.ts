@@ -78,7 +78,7 @@ export class BoardView extends Container {
             const x = b.i * 550;
             const y = b.j * 300;
             arr.push({ x, y });
-            box.position.set(b.i * 550, b.j * 300);
+            box.position.set(x, y);
             this.boxes.push(box);
             this.addChild(box);
         });

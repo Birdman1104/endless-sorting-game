@@ -58,7 +58,7 @@ export class ItemView extends Container {
     private build(): void {
         this.sprite = Sprite.from(`item_${this.type}.png`);
         this.sprite.anchor.set(0.5);
-        const scale = 75 / this.sprite.width;
+        const scale = 110 / this.sprite.width;
         this.sprite.scale.set(scale);
         this.addChild(this.sprite);
     }

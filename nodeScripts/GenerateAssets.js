@@ -274,10 +274,10 @@ async function start() {
     await generateUncompressedSprites();
     console.log('generating audio assets');
     await generateAudioAssets();
-    console.log('generating fonts');
-    await generateFonts();
-    console.log('generating spines');
-    await generateSpines();
+    // console.log('generating fonts');
+    // await generateFonts();
+    // console.log('generating spines');
+    // await generateSpines();
     console.log('asset generation complete');
     console.log('running the game');
 }

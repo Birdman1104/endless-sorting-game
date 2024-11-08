@@ -6,8 +6,6 @@ import SoundController from './SoundController';
 import { fitDimension, getModalSize } from './Utils';
 import { assets } from './assets/assetsNames/assets';
 import { atlases } from './assets/assetsNames/atlas';
-import { fonts } from './assets/assetsNames/fonts';
-import { spines } from './assets/assetsNames/spines';
 import { mapCommands } from './configs/EventCommandPairs';
 import { ScreenSizeConfig } from './configs/ScreenSizeConfig';
 import { MainGameEvents, WindowEvent } from './events/MainEvents';
@@ -74,16 +72,16 @@ class App extends Application {
             Assets.add(name, json);
             await Assets.load(name);
         }
-        for (const font of fonts) {
-            const { name, path } = font;
-            Assets.add(name, path);
-            await Assets.load(name);
-        }
-        for (const spine of spines) {
-            const { key: name, jsonURL, atlasURL } = spine;
-            Assets.add(name, jsonURL);
-            await Assets.load(name);
-        }
+        // for (const font of fonts) {
+        //     const { name, path } = font;
+        //     Assets.add(name, path);
+        //     await Assets.load(name);
+        // }
+        // for (const spine of spines) {
+        //     const { key: name, jsonURL, atlasURL } = spine;
+        //     Assets.add(name, jsonURL);
+        //     await Assets.load(name);
+        // }
         SoundController.loadSounds();
     }
 
