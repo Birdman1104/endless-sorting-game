@@ -214,6 +214,8 @@ export class BoardView extends Container {
                 b3.empty();
                 lego.event.emit(BoardEvents.Match, b1.insertedItem?.type, i);
                 this.animateMatch(elements);
+
+                this.items = this.items.filter((item) => !elements.includes(item));
             }
         }
     }
