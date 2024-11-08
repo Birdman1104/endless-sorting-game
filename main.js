@@ -35948,6 +35948,7 @@ class BoardView extends Container {
                 b3.empty();
                 dist_lego.event.emit(BoardEvents.Match, (_a = b1.insertedItem) === null || _a === void 0 ? void 0 : _a.type, i);
                 this.animateMatch(elements);
+                this.items = this.items.filter((item) => !elements.includes(item));
             }
         }
     }
