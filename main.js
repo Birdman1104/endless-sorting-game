@@ -35763,7 +35763,7 @@ class ItemView extends Container {
     build() {
         this.sprite = Sprite.from(`item_${this.type}.png`);
         this.sprite.anchor.set(0.5);
-        const scale = 75 / this.sprite.width;
+        const scale = 110 / this.sprite.width;
         this.sprite.scale.set(scale);
         this.addChild(this.sprite);
     }
@@ -35833,7 +35833,7 @@ class BoardView extends Container {
             const x = b.i * 550;
             const y = b.j * 300;
             arr.push({ x, y });
-            box.position.set(b.i * 550, b.j * 300);
+            box.position.set(x, y);
             this.boxes.push(box);
             this.addChild(box);
         });
@@ -36131,31 +36131,12 @@ const SoundController = new SoundControl();
 /* harmony default export */ const src_SoundController = (SoundController);
 
 ;// CONCATENATED MODULE: ./src/assets/assetsNames/assets.ts
-const assets = [{ name: 'bkg.jpg', path: 'assets/uncompressed/bkg.jpg' }];
+const assets = [];
 
 ;// CONCATENATED MODULE: ./src/assets/assetsNames/atlas.ts
 const atlases = [
     { name: 'elements', json: 'assets/atlas/elements@1.png.json', png: 'assets/atlas/elements.png' },
     { name: 'game-ui', json: 'assets/atlas/game-ui@1.png.json', png: 'assets/atlas/game-ui.png' },
-];
-
-;// CONCATENATED MODULE: ./src/assets/assetsNames/fonts.ts
-const fonts = [{ name: 'Filmotype_Major', path: 'assets/fonts/Filmotype_Major.otf' }];
-
-;// CONCATENATED MODULE: ./src/assets/assetsNames/spines.ts
-const spines = [
-    {
-        key: 'card',
-        jsonURL: 'assets/spines/card/cards.json',
-        atlasURL: 'assets/spines/card/cards.atlas',
-        preMultipliedAlpha: true,
-    },
-    {
-        key: 'spineboy',
-        jsonURL: 'assets/spines/spineboy/spineboy.json',
-        atlasURL: 'assets/spines/spineboy/spineboy.atlas',
-        preMultipliedAlpha: true,
-    },
 ];
 
 ;// CONCATENATED MODULE: ./src/models/ObservableModel.ts
@@ -36495,8 +36476,6 @@ var App_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 
 
 
-
-
 class App extends Application {
     constructor() {
         super({
@@ -36548,16 +36527,16 @@ class App extends Application {
                 Assets.add(name, json);
                 yield Assets.load(name);
             }
-            for (const font of fonts) {
-                const { name, path } = font;
-                Assets.add(name, path);
-                yield Assets.load(name);
-            }
-            for (const spine of spines) {
-                const { key: name, jsonURL, atlasURL } = spine;
-                Assets.add(name, jsonURL);
-                yield Assets.load(name);
-            }
+            // for (const font of fonts) {
+            //     const { name, path } = font;
+            //     Assets.add(name, path);
+            //     await Assets.load(name);
+            // }
+            // for (const spine of spines) {
+            //     const { key: name, jsonURL, atlasURL } = spine;
+            //     Assets.add(name, jsonURL);
+            //     await Assets.load(name);
+            // }
             src_SoundController.loadSounds();
         });
     }
