@@ -34157,12 +34157,12 @@ const getBackgroundGridLandscapeConfig = () => {
     const bounds = { x: 0, y: 0, width, height };
     return {
         name: 'background',
-        debug: { color: 0xd95027 },
+        // debug: { color: 0xd95027 },
         bounds,
         cells: [
             {
                 name: 'bkg',
-                scale: CellScale.envelop,
+                scale: CellScale.fill,
                 bounds: { x: 0, y: 0, width: 1, height: 1 },
             },
         ],
@@ -34173,12 +34173,12 @@ const getBackgroundGridPortraitConfig = () => {
     const bounds = { x: 0, y: 0, width, height };
     return {
         name: 'background',
-        debug: { color: 0xd95027 },
+        // debug: { color: 0xd95027 },
         bounds,
         cells: [
             {
                 name: 'bkg',
-                scale: CellScale.envelop,
+                scale: CellScale.fill,
                 bounds: { x: 0, y: 0, width: 1, height: 1 },
             },
         ],
@@ -34201,7 +34201,10 @@ class BackgroundView extends PixiGrid {
         super.rebuild(this.getGridConfig());
     }
     build() {
-        const bkg = Sprite.from('bkg.jpg');
+        const bkg = new Graphics_Graphics();
+        bkg.beginFill(0x96d6dc, 1);
+        bkg.drawRect(0, 0, 10, 10);
+        bkg.endFill();
         this.setChild('bkg', bkg);
     }
 }
@@ -34216,7 +34219,7 @@ const getForegroundGridLandscapeConfig = () => {
     const bounds = { x: 0, y: 0, width, height };
     return {
         name: 'foreground',
-        debug: { color: 0xff5027 },
+        // debug: { color: 0xff5027 },
         bounds,
         cells: [
             {
@@ -34231,7 +34234,7 @@ const getForegroundGridPortraitConfig = () => {
     const bounds = { x: 0, y: 0, width, height };
     return {
         name: 'foreground',
-        debug: { color: 0xff5027 },
+        // debug: { color: 0xff5027 },
         bounds,
         cells: [
             {
@@ -34271,7 +34274,7 @@ const getGameViewGridLandscapeConfig = () => {
     const bounds = { x: 0, y: 0, width, height };
     return {
         name: 'game',
-        debug: { color: 0xd9ff27 },
+        // debug: { color: 0xd9ff27 },
         bounds,
         cells: [
             {
@@ -34286,7 +34289,7 @@ const getGameViewGridPortraitConfig = () => {
     const bounds = { x: 0, y: 0, width, height };
     return {
         name: 'game',
-        debug: { color: 0xd9ff27 },
+        // debug: { color: 0xd9ff27 },
         bounds,
         cells: [
             {
@@ -35780,22 +35783,25 @@ class BoardView extends Container {
         super();
         this.boxes = [];
         this.items = [];
+        this.addingElementsQueue = [];
         this.canDrag = true;
         this.dragStarted = false;
-        dist_lego.event.on(BoardModelEvents.BoxesUpdate, this.onBoxesUpdate, this);
+        dist_lego.event
+            .on(BoardModelEvents.BoxesUpdate, this.onBoxesUpdate, this)
+            .on(BoxModelEvents.ElementsUpdate, this.onBoxElementsUpdate, this);
         this.build();
     }
     getBounds(skipUpdate, rect) {
         return new Rectangle(-300, -150, 1700, 900);
     }
     build() {
-        this.buildBlackBlocker();
+        this.buildInputLayer();
     }
-    buildBlackBlocker() {
+    buildInputLayer() {
         const { x, y, width, height } = this.getBounds();
         this.inputLayer = new Graphics_Graphics();
-        this.inputLayer.beginFill(0x000000, 1);
-        this.inputLayer.drawRect(x, y, width, height);
+        this.inputLayer.beginFill(0x96d6dc, 0.2);
+        this.inputLayer.drawRect(x * 3, y * 4, width * 2, height * 2);
         this.inputLayer.endFill();
         this.inputLayer.eventMode = 'static';
         this.inputLayer.on('pointerdown', (e) => this.onDragStart(e));
@@ -35803,8 +35809,22 @@ class BoardView extends Container {
         this.inputLayer.on('pointerup', this.stopDrag, this);
         this.inputLayer.on('disableDrag', () => (this.canDrag = false));
         this.inputLayer.on('enableDrag', () => (this.canDrag = true));
-        this.inputLayer.alpha = 0.2;
         this.addChild(this.inputLayer);
+    }
+    onBoxElementsUpdate(elements, oldElement, uuid) {
+        const box = this.boxes.find((box) => box.uuid === uuid);
+        if (!box)
+            return;
+        const index = this.boxes.indexOf(box);
+        if (elements.length === 0) {
+            for (let i = 0; i < 3; i++) {
+                const area = this.dropAreas[index * 3 + i];
+                area.empty();
+            }
+        }
+        else {
+            this.addingElementsQueue.push({ box, elements, index });
+        }
     }
     onBoxesUpdate(data) {
         const arr = [];
@@ -35916,23 +35936,60 @@ class BoardView extends Container {
         area === null || area === void 0 ? void 0 : area.setItem(this.draggingItem);
     }
     checkMatches() {
-        // for (let i = 0; i < 9; i++) {
-        //     const b1 = this.finalPositions[i * 3];
-        //     const b2 = this.finalPositions[i * 3 + 1];
-        //     const b3 = this.finalPositions[i * 3 + 2];
-        //     if (this.checkMatch(b1, b2, b3)) {
-        //         const elements = [b1, b2, b3].map((el) => el.insertedItem).filter((el) => el) as ItemView[];
-        //         b1.empty();
-        //         b2.empty();
-        //         b3.empty();
-        //         lego.event.emit(BoardEvents.Match, b1.insertedItem?.type, i);
-        //         this.animateMatch(elements);
-        //     }
-        // }
+        var _a;
+        for (let i = 0; i < 9; i++) {
+            const b1 = this.dropAreas[i * 3];
+            const b2 = this.dropAreas[i * 3 + 1];
+            const b3 = this.dropAreas[i * 3 + 2];
+            if (this.checkMatch(b1, b2, b3)) {
+                const elements = [b1, b2, b3].map((el) => el.insertedItem).filter((el) => el);
+                b1.empty();
+                b2.empty();
+                b3.empty();
+                dist_lego.event.emit(BoardEvents.Match, (_a = b1.insertedItem) === null || _a === void 0 ? void 0 : _a.type, i);
+                this.animateMatch(elements);
+            }
+        }
+    }
+    animateMatch(elements) {
+        const targets = elements.map((el) => el.scale);
+        anime_es({
+            targets,
+            x: 0,
+            y: 0,
+            duration: 300,
+            easing: 'easeInOutSine',
+            complete: () => {
+                elements.forEach((el) => {
+                    el.emptyArea();
+                    el.destroy();
+                });
+                elements = [];
+                this.addingElementsQueue.forEach(({ box, elements, index }) => {
+                    elements.forEach((element, i) => {
+                        const area = this.dropAreas[index * 3 + i];
+                        const item = new ItemView(element);
+                        item.position.set(area.centerX, area.centerY);
+                        area.setItem(item);
+                        item.setArea(area);
+                        item.setOriginalPosition(area.centerX, area.centerY);
+                        this.items.push(item);
+                        this.addChild(item);
+                    });
+                });
+                this.addingElementsQueue = [];
+            },
+        });
     }
     getClickedItem(point) {
         const { x, y } = this.toLocal(point);
         return this.items.find((i) => x >= i.x - i.width / 2 && x <= i.x + i.width / 2 && y >= i.y - i.height / 2 && y <= i.y + i.height / 2);
+    }
+    checkMatch(c1, c2, c3) {
+        var _a, _b, _c, _d;
+        if (!c1.insertedItem || !c2.insertedItem || !c3.insertedItem)
+            return false;
+        return ((_a = c1.insertedItem) === null || _a === void 0 ? void 0 : _a.type) === ((_b = c2.insertedItem) === null || _b === void 0 ? void 0 : _b.type) && ((_c = c2.insertedItem) === null || _c === void 0 ? void 0 : _c.type) === ((_d = c3.insertedItem) === null || _d === void 0 ? void 0 : _d.type);
     }
 }
 
@@ -35970,7 +36027,7 @@ const getUIGridLandscapeConfig = () => {
     const bounds = { x: 0, y: 0, width, height };
     return {
         name: 'ui',
-        debug: { color: 0xd950ff },
+        // debug: { color: 0xd950ff },
         bounds,
         cells: [
             {
@@ -35985,7 +36042,7 @@ const getUIGridPortraitConfig = () => {
     const bounds = { x: 0, y: 0, width, height };
     return {
         name: 'ui',
-        debug: { color: 0xd950ff },
+        // debug: { color: 0xd950ff },
         bounds,
         cells: [
             {
@@ -36363,7 +36420,16 @@ class HeadModel extends ObservableModel {
 const Head = new HeadModel();
 /* harmony default export */ const models_HeadModel = (Head);
 
+;// CONCATENATED MODULE: ./src/configs/commands/BoardCommands.ts
+
+const onMatchCommand = (type, index) => {
+    var _a, _b, _c, _d;
+    (_b = (_a = models_HeadModel.gameModel) === null || _a === void 0 ? void 0 : _a.board) === null || _b === void 0 ? void 0 : _b.matchedItems.push(type);
+    (_d = (_c = models_HeadModel.gameModel) === null || _c === void 0 ? void 0 : _c.board) === null || _d === void 0 ? void 0 : _d.addNewItems(index);
+};
+
 ;// CONCATENATED MODULE: ./src/configs/EventCommandPairs.ts
+
 
 
 
@@ -36385,6 +36451,10 @@ const eventCommandPairs = Object.freeze([
     {
         event: MainGameEvents.MainViewReady,
         command: onMainViewReadyCommand,
+    },
+    {
+        event: BoardEvents.Match,
+        command: onMatchCommand,
     },
 ]);
 
@@ -36429,7 +36499,7 @@ var App_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argu
 class App extends Application {
     constructor() {
         super({
-            backgroundColor: 0xffffff,
+            backgroundColor: 0x96d6dc,
             backgroundAlpha: 1,
             powerPreference: 'high-performance',
             antialias: true,
