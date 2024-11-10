@@ -1,7 +1,7 @@
 import { shuffle } from '../Utils';
 import { ItemType } from '../models/ItemModel';
 
-const ITEMS = [ItemType.A, ItemType.B, ItemType.C, ItemType.D, ItemType.E];
+export const ITEMS = [ItemType.A, ItemType.B, ItemType.C, ItemType.D, ItemType.E];
 
 function isValid(array) {
     for (let i = 0; i < array.length - 2; i++) {

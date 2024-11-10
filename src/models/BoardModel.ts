@@ -5,7 +5,12 @@ import { ObservableModel } from './ObservableModel';
 
 export class BoardModel extends ObservableModel {
     private _boxes: BoxModel[] = [];
-    private _matchedItems: ItemType[] = [];
+
+    private _counterA = 0;
+    private _counterB = 0;
+    private _counterC = 0;
+    private _counterD = 0;
+    private _counterE = 0;
 
     constructor() {
         super('BoardModel');
@@ -21,12 +26,44 @@ export class BoardModel extends ObservableModel {
         this._boxes = value;
     }
 
-    get matchedItems(): ItemType[] {
-        return this._matchedItems;
+    get counterA(): number {
+        return this._counterA;
     }
 
-    set matchedItems(value: ItemType[]) {
-        this._matchedItems = value;
+    set counterA(value: number) {
+        this._counterA = value;
+    }
+
+    get counterB(): number {
+        return this._counterB;
+    }
+
+    set counterB(value: number) {
+        this._counterB = value;
+    }
+
+    get counterC(): number {
+        return this._counterC;
+    }
+
+    set counterC(value: number) {
+        this._counterC = value;
+    }
+
+    get counterD(): number {
+        return this._counterD;
+    }
+
+    set counterD(value: number) {
+        this._counterD = value;
+    }
+
+    get counterE(): number {
+        return this._counterE;
+    }
+
+    set counterE(value: number) {
+        this._counterE = value;
     }
 
     public initialize(): void {
@@ -49,5 +86,25 @@ export class BoardModel extends ObservableModel {
 
         box?.empty();
         box?.addElements(data);
+    }
+
+    public updateCounter(type: ItemType): void {
+        switch (type) {
+            case ItemType.A:
+                this._counterA += 3;
+                break;
+            case ItemType.B:
+                this._counterB += 3;
+                break;
+            case ItemType.C:
+                this._counterC += 3;
+                break;
+            case ItemType.D:
+                this._counterD += 3;
+                break;
+            case ItemType.E:
+                this._counterE += 3;
+                break;
+        }
     }
 }

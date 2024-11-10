@@ -17,12 +17,7 @@ export class GameView extends PixiGrid {
     }
 
     private build(): void {
-        const board = new BoardView()
-        board.on('imageClick', () => {
-            console.warn('image click event in game view');
-            
-        })
-
-        this.setChild('board', board)
+        const board = new BoardView();
+        this.setChild('board', board);
     }
 }

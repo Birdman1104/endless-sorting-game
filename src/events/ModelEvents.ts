@@ -1,6 +1,10 @@
 export const BoardModelEvents = {
     BoxesUpdate: 'BoardModelBoxesUpdate',
-    MatchedItemsUpdate: 'BoardModelMatchedItemsUpdate',
+    CounterAUpdate: 'BoardModelCounterAUpdate',
+    CounterBUpdate: 'BoardModelCounterBUpdate',
+    CounterCUpdate: 'BoardModelCounterCUpdate',
+    CounterDUpdate: 'BoardModelCounterDUpdate',
+    CounterEUpdate: 'BoardModelCounterEUpdate',
 };
 
 export const BoxModelEvents = { ElementsUpdate: 'BoxModelElementsUpdate' };

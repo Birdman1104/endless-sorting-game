@@ -207,12 +207,13 @@ export class BoardView extends Container {
         const b1 = this.dropAreas[boxIndex * 3];
         const b2 = this.dropAreas[boxIndex * 3 + 1];
         const b3 = this.dropAreas[boxIndex * 3 + 2];
+        const type = b1.insertedItem?.type;
         if (this.checkMatch(b1, b2, b3)) {
             const elements = [b1, b2, b3].map((el) => el.insertedItem).filter((el) => el) as ItemView[];
             b1.empty();
             b2.empty();
             b3.empty();
-            lego.event.emit(BoardEvents.Match, b1.insertedItem?.type, boxIndex);
+            lego.event.emit(BoardEvents.Match, type, boxIndex);
             this.animateMatch(elements);
 
             this.items = this.items.filter((item) => !elements.includes(item));
