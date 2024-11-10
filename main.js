@@ -34279,7 +34279,7 @@ const getGameViewGridLandscapeConfig = () => {
         cells: [
             {
                 name: 'board',
-                bounds: { x: 0, y: 0, width: 1, height: 1 },
+                bounds: { x: 0, y: 0.1, width: 1, height: 0.9 },
             },
         ],
     };
@@ -34294,7 +34294,7 @@ const getGameViewGridPortraitConfig = () => {
         cells: [
             {
                 name: 'board',
-                bounds: { x: 0, y: 0, width: 1, height: 1 },
+                bounds: { x: 0, y: 0.1, width: 1, height: 0.9 },
             },
         ],
     };
@@ -35633,7 +35633,11 @@ const BoardEvents = {
 ;// CONCATENATED MODULE: ./src/events/ModelEvents.ts
 const BoardModelEvents = {
     BoxesUpdate: 'BoardModelBoxesUpdate',
-    MatchedItemsUpdate: 'BoardModelMatchedItemsUpdate',
+    CounterAUpdate: 'BoardModelCounterAUpdate',
+    CounterBUpdate: 'BoardModelCounterBUpdate',
+    CounterCUpdate: 'BoardModelCounterCUpdate',
+    CounterDUpdate: 'BoardModelCounterDUpdate',
+    CounterEUpdate: 'BoardModelCounterEUpdate',
 };
 const BoxModelEvents = { ElementsUpdate: 'BoxModelElementsUpdate' };
 const GameModelEvents = { BoardUpdate: 'GameModelBoardUpdate', StateUpdate: 'GameModelStateUpdate' };
@@ -35894,7 +35898,7 @@ class BoardView extends Container {
             area === null || area === void 0 ? void 0 : area.empty();
             this.draggingItem.emptyArea();
             this.dropItemToArea(dropArea, this.draggingItem);
-            this.checkMatches();
+            this.checkMatches(this.dropAreas.indexOf(dropArea));
         }
         else {
             this.dropItemToOriginalPosition();
@@ -35935,21 +35939,21 @@ class BoardView extends Container {
         this.draggingItem.setArea(area);
         area === null || area === void 0 ? void 0 : area.setItem(this.draggingItem);
     }
-    checkMatches() {
+    checkMatches(areaIndex) {
         var _a;
-        for (let i = 0; i < 9; i++) {
-            const b1 = this.dropAreas[i * 3];
-            const b2 = this.dropAreas[i * 3 + 1];
-            const b3 = this.dropAreas[i * 3 + 2];
-            if (this.checkMatch(b1, b2, b3)) {
-                const elements = [b1, b2, b3].map((el) => el.insertedItem).filter((el) => el);
-                b1.empty();
-                b2.empty();
-                b3.empty();
-                dist_lego.event.emit(BoardEvents.Match, (_a = b1.insertedItem) === null || _a === void 0 ? void 0 : _a.type, i);
-                this.animateMatch(elements);
-                this.items = this.items.filter((item) => !elements.includes(item));
-            }
+        const boxIndex = Math.floor(areaIndex / 3);
+        const b1 = this.dropAreas[boxIndex * 3];
+        const b2 = this.dropAreas[boxIndex * 3 + 1];
+        const b3 = this.dropAreas[boxIndex * 3 + 2];
+        const type = (_a = b1.insertedItem) === null || _a === void 0 ? void 0 : _a.type;
+        if (this.checkMatch(b1, b2, b3)) {
+            const elements = [b1, b2, b3].map((el) => el.insertedItem).filter((el) => el);
+            b1.empty();
+            b2.empty();
+            b3.empty();
+            dist_lego.event.emit(BoardEvents.Match, type, boxIndex);
+            this.animateMatch(elements);
+            this.items = this.items.filter((item) => !elements.includes(item));
         }
     }
     animateMatch(elements) {
@@ -36011,9 +36015,6 @@ class GameView extends PixiGrid {
     }
     build() {
         const board = new BoardView();
-        board.on('imageClick', () => {
-            console.warn('image click event in game view');
-        });
         this.setChild('board', board);
     }
 }
@@ -36033,7 +36034,7 @@ const getUIGridLandscapeConfig = () => {
         cells: [
             {
                 name: 'score',
-                bounds: { x: 0, y: 0, width: 0.11, height: 0.11 },
+                bounds: { x: 0.1, y: 0.05, width: 0.8, height: 0.11 },
             },
         ],
     };
@@ -36048,96 +36049,11 @@ const getUIGridPortraitConfig = () => {
         cells: [
             {
                 name: 'score',
-                bounds: { x: 0, y: 0, width: 0.11, height: 0.11 },
+                bounds: { x: 0.1, y: 0.05, width: 0.8, height: 0.11 },
             },
         ],
     };
 };
-
-;// CONCATENATED MODULE: ./src/views/UIView.ts
-
-
-class UIView extends PixiGrid {
-    constructor() {
-        super();
-        this.build();
-    }
-    getGridConfig() {
-        return getUIGridConfig();
-    }
-    rebuild(config) {
-        super.rebuild(this.getGridConfig());
-    }
-    build() {
-        //
-    }
-}
-
-;// CONCATENATED MODULE: ./src/MainStage.ts
-
-
-
-
-
-class PixiStage extends Container {
-    constructor() {
-        super();
-    }
-    resize() {
-        var _a, _b, _c, _d;
-        (_a = this.bgView) === null || _a === void 0 ? void 0 : _a.rebuild();
-        (_b = this.gameView) === null || _b === void 0 ? void 0 : _b.rebuild();
-        (_c = this.uiView) === null || _c === void 0 ? void 0 : _c.rebuild();
-        (_d = this.foregroundView) === null || _d === void 0 ? void 0 : _d.rebuild();
-    }
-    start() {
-        this.bgView = new BackgroundView();
-        this.addChild(this.bgView);
-        this.gameView = new GameView();
-        this.addChild(this.gameView);
-        this.uiView = new UIView();
-        this.addChild(this.uiView);
-        this.foregroundView = new ForegroundView();
-        this.addChild(this.foregroundView);
-    }
-}
-/* harmony default export */ const MainStage = (PixiStage);
-
-// EXTERNAL MODULE: ./node_modules/howler/dist/howler.js
-var howler = __webpack_require__(196);
-;// CONCATENATED MODULE: ./src/assets/assetsNames/audio.ts
-const audioAssets = [
-    { name: 'audio', path: 'assets/audio/audio.mp3' },
-    { name: 'sound', path: 'assets/audio/sound.mp3' },
-];
-
-;// CONCATENATED MODULE: ./src/SoundController.ts
-
-
-class SoundControl {
-    constructor() {
-        this.sounds = {};
-    }
-    loadSounds() {
-        audioAssets.forEach(({ name, path }) => {
-            this.sounds[name] = new howler.Howl({ src: path });
-        });
-    }
-    gameModelUpdate() {
-        this.sounds.sound.play();
-    }
-}
-const SoundController = new SoundControl();
-/* harmony default export */ const src_SoundController = (SoundController);
-
-;// CONCATENATED MODULE: ./src/assets/assetsNames/assets.ts
-const assets = [];
-
-;// CONCATENATED MODULE: ./src/assets/assetsNames/atlas.ts
-const atlases = [
-    { name: 'elements', json: 'assets/atlas/elements@1.png.json', png: 'assets/atlas/elements.png' },
-    { name: 'game-ui', json: 'assets/atlas/game-ui@1.png.json', png: 'assets/atlas/game-ui.png' },
-];
 
 ;// CONCATENATED MODULE: ./src/models/ObservableModel.ts
 
@@ -36251,6 +36167,185 @@ function getItemsAmount(get2Elements = false) {
     return rnd < 0.5 ? 2 : 3;
 }
 
+;// CONCATENATED MODULE: ./src/views/ItemCounter.ts
+
+
+class ItemCounter extends Container {
+    constructor(itemType) {
+        super();
+        this.itemType = itemType;
+        this.build();
+    }
+    get type() {
+        return this.itemType;
+    }
+    updateCounter(value) {
+        this.counter.text = value.toString();
+        fitText(this.counter, 50, 50);
+    }
+    build() {
+        this.buildItem();
+        this.buildCounter();
+    }
+    buildItem() {
+        this.sprite = Sprite.from(`item_${this.type}.png`);
+        this.sprite.anchor.set(0.5);
+        const scale = 120 / this.sprite.width;
+        this.sprite.scale.set(scale);
+        this.addChild(this.sprite);
+    }
+    buildCounter() {
+        const gr = new Graphics_Graphics();
+        gr.beginFill(0xf54284);
+        gr.drawCircle(60, -60, 30);
+        gr.endFill();
+        this.addChild(gr);
+        this.counter = new Text('0', { fill: 0xffffff, fontSize: 40 });
+        this.counter.anchor.set(0.5);
+        this.counter.position.set(60, -60);
+        this.addChild(this.counter);
+    }
+}
+
+;// CONCATENATED MODULE: ./src/views/CounterView.ts
+
+
+
+
+
+
+class CounterView extends Container {
+    constructor() {
+        super();
+        this.counters = [];
+        dist_lego.event
+            .on(BoardModelEvents.CounterAUpdate, this.onCounterAUpdate, this)
+            .on(BoardModelEvents.CounterBUpdate, this.onCounterBUpdate, this)
+            .on(BoardModelEvents.CounterCUpdate, this.onCounterCUpdate, this)
+            .on(BoardModelEvents.CounterDUpdate, this.onCounterDUpdate, this)
+            .on(BoardModelEvents.CounterEUpdate, this.onCounterEUpdate, this);
+        this.build();
+    }
+    build() {
+        ITEMS.forEach((item, index) => {
+            const itemCounter = new ItemCounter(item);
+            itemCounter.position.set(100 + 200 * index, 100);
+            this.addChild(itemCounter);
+            this.counters.push(itemCounter);
+        });
+    }
+    onCounterAUpdate(value) {
+        var _a;
+        (_a = this.counters.find((c) => c.type === ItemType.A)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+    }
+    onCounterBUpdate(value) {
+        var _a;
+        (_a = this.counters.find((c) => c.type === ItemType.B)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+    }
+    onCounterCUpdate(value) {
+        var _a;
+        (_a = this.counters.find((c) => c.type === ItemType.C)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+    }
+    onCounterDUpdate(value) {
+        var _a;
+        (_a = this.counters.find((c) => c.type === ItemType.D)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+    }
+    onCounterEUpdate(value) {
+        var _a;
+        (_a = this.counters.find((c) => c.type === ItemType.E)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+    }
+}
+
+;// CONCATENATED MODULE: ./src/views/UIView.ts
+
+
+
+class UIView extends PixiGrid {
+    constructor() {
+        super();
+        this.build();
+    }
+    getGridConfig() {
+        return getUIGridConfig();
+    }
+    rebuild(config) {
+        super.rebuild(this.getGridConfig());
+    }
+    build() {
+        this.buildCounter();
+    }
+    buildCounter() {
+        this.counter = new CounterView();
+        this.setChild('score', this.counter);
+    }
+}
+
+;// CONCATENATED MODULE: ./src/MainStage.ts
+
+
+
+
+
+class PixiStage extends Container {
+    constructor() {
+        super();
+    }
+    resize() {
+        var _a, _b, _c, _d;
+        (_a = this.bgView) === null || _a === void 0 ? void 0 : _a.rebuild();
+        (_b = this.gameView) === null || _b === void 0 ? void 0 : _b.rebuild();
+        (_c = this.uiView) === null || _c === void 0 ? void 0 : _c.rebuild();
+        (_d = this.foregroundView) === null || _d === void 0 ? void 0 : _d.rebuild();
+    }
+    start() {
+        this.bgView = new BackgroundView();
+        this.addChild(this.bgView);
+        this.gameView = new GameView();
+        this.addChild(this.gameView);
+        this.uiView = new UIView();
+        this.addChild(this.uiView);
+        this.foregroundView = new ForegroundView();
+        this.addChild(this.foregroundView);
+    }
+}
+/* harmony default export */ const MainStage = (PixiStage);
+
+// EXTERNAL MODULE: ./node_modules/howler/dist/howler.js
+var howler = __webpack_require__(196);
+;// CONCATENATED MODULE: ./src/assets/assetsNames/audio.ts
+const audioAssets = [
+    { name: 'audio', path: 'assets/audio/audio.mp3' },
+    { name: 'sound', path: 'assets/audio/sound.mp3' },
+];
+
+;// CONCATENATED MODULE: ./src/SoundController.ts
+
+
+class SoundControl {
+    constructor() {
+        this.sounds = {};
+    }
+    loadSounds() {
+        audioAssets.forEach(({ name, path }) => {
+            this.sounds[name] = new howler.Howl({ src: path });
+        });
+    }
+    gameModelUpdate() {
+        this.sounds.sound.play();
+    }
+}
+const SoundController = new SoundControl();
+/* harmony default export */ const src_SoundController = (SoundController);
+
+;// CONCATENATED MODULE: ./src/assets/assetsNames/assets.ts
+const assets = [];
+
+;// CONCATENATED MODULE: ./src/assets/assetsNames/atlas.ts
+const atlases = [
+    { name: 'elements', json: 'assets/atlas/elements@1.png.json', png: 'assets/atlas/elements.png' },
+    { name: 'game-ui', json: 'assets/atlas/game-ui@1.png.json', png: 'assets/atlas/game-ui.png' },
+];
+
 ;// CONCATENATED MODULE: ./src/models/BoxModel.ts
 
 
@@ -36295,11 +36390,16 @@ class BoxModel extends ObservableModel {
 
 
 
+
 class BoardModel extends ObservableModel {
     constructor() {
         super('BoardModel');
         this._boxes = [];
-        this._matchedItems = [];
+        this._counterA = 0;
+        this._counterB = 0;
+        this._counterC = 0;
+        this._counterD = 0;
+        this._counterE = 0;
         this.makeObservable();
     }
     get boxes() {
@@ -36308,11 +36408,35 @@ class BoardModel extends ObservableModel {
     set boxes(value) {
         this._boxes = value;
     }
-    get matchedItems() {
-        return this._matchedItems;
+    get counterA() {
+        return this._counterA;
     }
-    set matchedItems(value) {
-        this._matchedItems = value;
+    set counterA(value) {
+        this._counterA = value;
+    }
+    get counterB() {
+        return this._counterB;
+    }
+    set counterB(value) {
+        this._counterB = value;
+    }
+    get counterC() {
+        return this._counterC;
+    }
+    set counterC(value) {
+        this._counterC = value;
+    }
+    get counterD() {
+        return this._counterD;
+    }
+    set counterD(value) {
+        this._counterD = value;
+    }
+    get counterE() {
+        return this._counterE;
+    }
+    set counterE(value) {
+        this._counterE = value;
     }
     initialize() {
         const data = getElementsData();
@@ -36331,6 +36455,25 @@ class BoardModel extends ObservableModel {
         const data = getElementsData(true)[0][0];
         box === null || box === void 0 ? void 0 : box.empty();
         box === null || box === void 0 ? void 0 : box.addElements(data);
+    }
+    updateCounter(type) {
+        switch (type) {
+            case ItemType.A:
+                this._counterA += 3;
+                break;
+            case ItemType.B:
+                this._counterB += 3;
+                break;
+            case ItemType.C:
+                this._counterC += 3;
+                break;
+            case ItemType.D:
+                this._counterD += 3;
+                break;
+            case ItemType.E:
+                this._counterE += 3;
+                break;
+        }
     }
 }
 
@@ -36406,7 +36549,7 @@ const Head = new HeadModel();
 
 const onMatchCommand = (type, index) => {
     var _a, _b, _c, _d;
-    (_b = (_a = models_HeadModel.gameModel) === null || _a === void 0 ? void 0 : _a.board) === null || _b === void 0 ? void 0 : _b.matchedItems.push(type);
+    (_b = (_a = models_HeadModel.gameModel) === null || _a === void 0 ? void 0 : _a.board) === null || _b === void 0 ? void 0 : _b.updateCounter(type);
     (_d = (_c = models_HeadModel.gameModel) === null || _c === void 0 ? void 0 : _c.board) === null || _d === void 0 ? void 0 : _d.addNewItems(index);
 };
 
