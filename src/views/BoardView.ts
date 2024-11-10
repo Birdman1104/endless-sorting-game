@@ -153,7 +153,7 @@ export class BoardView extends Container {
             area?.empty();
             this.draggingItem.emptyArea();
             this.dropItemToArea(dropArea, this.draggingItem);
-            this.checkMatches();
+            this.checkMatches(this.dropAreas.indexOf(dropArea));
         } else {
             this.dropItemToOriginalPosition();
         }
@@ -202,21 +202,20 @@ export class BoardView extends Container {
         area?.setItem(this.draggingItem);
     }
 
-    private checkMatches(): void {
-        for (let i = 0; i < 9; i++) {
-            const b1 = this.dropAreas[i * 3];
-            const b2 = this.dropAreas[i * 3 + 1];
-            const b3 = this.dropAreas[i * 3 + 2];
-            if (this.checkMatch(b1, b2, b3)) {
-                const elements = [b1, b2, b3].map((el) => el.insertedItem).filter((el) => el) as ItemView[];
-                b1.empty();
-                b2.empty();
-                b3.empty();
-                lego.event.emit(BoardEvents.Match, b1.insertedItem?.type, i);
-                this.animateMatch(elements);
+    private checkMatches(areaIndex: number): void {
+        const boxIndex = Math.floor(areaIndex / 3);
+        const b1 = this.dropAreas[boxIndex * 3];
+        const b2 = this.dropAreas[boxIndex * 3 + 1];
+        const b3 = this.dropAreas[boxIndex * 3 + 2];
+        if (this.checkMatch(b1, b2, b3)) {
+            const elements = [b1, b2, b3].map((el) => el.insertedItem).filter((el) => el) as ItemView[];
+            b1.empty();
+            b2.empty();
+            b3.empty();
+            lego.event.emit(BoardEvents.Match, b1.insertedItem?.type, boxIndex);
+            this.animateMatch(elements);
 
-                this.items = this.items.filter((item) => !elements.includes(item));
-            }
+            this.items = this.items.filter((item) => !elements.includes(item));
         }
     }
 
