@@ -215,20 +215,22 @@ export class BoardView extends Container {
             b3.empty();
             lego.event.emit(BoardEvents.Match, type, boxIndex);
             this.animateMatch(elements);
-
-            this.items = this.items.filter((item) => !elements.includes(item));
         }
     }
 
     private animateMatch(elements: ItemView[]): void {
         const targets = elements.map((el) => el.scale);
+        const positions = elements.map((el) => this.toGlobal(el.position));
+        const type = elements[0].type;
         anime({
             targets,
-            x: 0,
-            y: 0,
-            duration: 300,
+            x: 1.2,
+            y: 1.2,
+            duration: 200,
             easing: 'easeInOutSine',
             complete: () => {
+                lego.event.emit(BoardEvents.AnimateMatch, type, positions);
+                this.items = this.items.filter((item) => !elements.includes(item));
                 elements.forEach((el) => {
                     el.emptyArea();
                     el.destroy();

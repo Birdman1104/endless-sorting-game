@@ -9,6 +9,7 @@ export const MainGameEvents = {
 };
 
 export const BoardEvents = {
+    AnimateMatch: 'BoardEventsAnimateMatch',
     Click: 'BoardEventsClick',
     Match: 'BoardEventsMatch',
     Move: 'BoardEventsMove',

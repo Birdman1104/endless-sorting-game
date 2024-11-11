@@ -1,6 +1,8 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container, ObservablePoint, Sprite } from 'pixi.js';
 import { ItemModel, ItemType } from '../models/ItemModel';
 import { DropDownAreaInfo } from '../utils/DropDownAreaInfo';
+
+export const BOARD_ITEM_SIZE = 110;
 
 export class ItemView extends Container {
     public originalX: number;
@@ -27,6 +29,10 @@ export class ItemView extends Container {
 
     get area(): DropDownAreaInfo | null {
         return this.dropArea;
+    }
+
+    get itemScale(): ObservablePoint {
+        return this.sprite.scale;
     }
 
     public setOriginalPosition(x: number, y: number): void {
@@ -58,7 +64,7 @@ export class ItemView extends Container {
     private build(): void {
         this.sprite = Sprite.from(`item_${this.type}.png`);
         this.sprite.anchor.set(0.5);
-        const scale = 110 / this.sprite.width;
+        const scale = BOARD_ITEM_SIZE / this.sprite.width;
         this.sprite.scale.set(scale);
         this.addChild(this.sprite);
     }

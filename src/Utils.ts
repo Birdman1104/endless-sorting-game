@@ -166,3 +166,9 @@ export const getModalSize = (): { width: number; height: number } => {
     const height = modal.offsetHeight;
     return { width, height };
 };
+
+export const callIfExists = (callback: any): void => {
+    if (typeof callback === 'function') {
+        callback();
+    }
+};
