@@ -34279,7 +34279,7 @@ const getGameViewGridLandscapeConfig = () => {
         cells: [
             {
                 name: 'board',
-                bounds: { x: 0, y: 0.1, width: 1, height: 0.9 },
+                bounds: { x: 0, y: 0.16, width: 1, height: 1 - 0.16 },
             },
         ],
     };
@@ -36170,6 +36170,7 @@ function getItemsAmount(get2Elements = false) {
 ;// CONCATENATED MODULE: ./src/views/ItemCounter.ts
 
 
+const SIZE = 120;
 class ItemCounter extends Container {
     constructor(itemType) {
         super();
@@ -36179,9 +36180,12 @@ class ItemCounter extends Container {
     get type() {
         return this.itemType;
     }
+    getBounds(skipUpdate, rect) {
+        return new Rectangle(0, 0, SIZE, SIZE);
+    }
     updateCounter(value) {
         this.counter.text = value.toString();
-        fitText(this.counter, 50, 50);
+        fitText(this.counter, SIZE / 2 - 10, SIZE / 2 - 10);
     }
     build() {
         this.buildItem();
@@ -36190,19 +36194,19 @@ class ItemCounter extends Container {
     buildItem() {
         this.sprite = Sprite.from(`item_${this.type}.png`);
         this.sprite.anchor.set(0.5);
-        const scale = 120 / this.sprite.width;
+        const scale = SIZE / this.sprite.width;
         this.sprite.scale.set(scale);
         this.addChild(this.sprite);
     }
     buildCounter() {
         const gr = new Graphics_Graphics();
         gr.beginFill(0xf54284);
-        gr.drawCircle(60, -60, 30);
+        gr.drawCircle(SIZE / 2, -SIZE / 2, SIZE / 4);
         gr.endFill();
         this.addChild(gr);
         this.counter = new Text('0', { fill: 0xffffff, fontSize: 40 });
         this.counter.anchor.set(0.5);
-        this.counter.position.set(60, -60);
+        this.counter.position.set(SIZE / 2, -SIZE / 2);
         this.addChild(this.counter);
     }
 }
@@ -36226,10 +36230,13 @@ class CounterView extends Container {
             .on(BoardModelEvents.CounterEUpdate, this.onCounterEUpdate, this);
         this.build();
     }
+    getBounds(skipUpdate, rect) {
+        return new Rectangle(0, 0, 940, 120);
+    }
     build() {
         ITEMS.forEach((item, index) => {
             const itemCounter = new ItemCounter(item);
-            itemCounter.position.set(100 + 200 * index, 100);
+            itemCounter.position.set(itemCounter.width / 2 + 200 * index, itemCounter.height / 2);
             this.addChild(itemCounter);
             this.counters.push(itemCounter);
         });
