@@ -1,5 +1,5 @@
 import { lego } from '@armathai/lego';
-import { Container } from 'pixi.js';
+import { Container, Rectangle } from 'pixi.js';
 import { ITEMS } from '../data/LevelData';
 import { BoardModelEvents } from '../events/ModelEvents';
 import { ItemType } from '../models/ItemModel';
@@ -21,10 +21,14 @@ export class CounterView extends Container {
         this.build();
     }
 
+    public getBounds(skipUpdate?: boolean | undefined, rect?: Rectangle | undefined): Rectangle {
+        return new Rectangle(0, 0, 940, 120);
+    }
+
     private build(): void {
         ITEMS.forEach((item, index) => {
             const itemCounter = new ItemCounter(item);
-            itemCounter.position.set(100 + 200 * index, 100);
+            itemCounter.position.set(itemCounter.width / 2 + 200 * index, itemCounter.height / 2);
             this.addChild(itemCounter);
             this.counters.push(itemCounter);
         });
