@@ -34145,6 +34145,11 @@ const getModalSize = () => {
     const height = modal.offsetHeight;
     return { width, height };
 };
+const callIfExists = (callback) => {
+    if (typeof callback === 'function') {
+        callback();
+    }
+};
 
 ;// CONCATENATED MODULE: ./src/configs/gridConfigs/BackgroundViewGC.ts
 
@@ -35623,6 +35628,7 @@ const MainGameEvents = {
     MainViewReady: 'MainGameEventsMainViewReady',
 };
 const BoardEvents = {
+    AnimateMatch: 'BoardEventsAnimateMatch',
     Click: 'BoardEventsClick',
     Match: 'BoardEventsMatch',
     Move: 'BoardEventsMove',
@@ -35721,6 +35727,7 @@ class BoxView extends Container {
 
 ;// CONCATENATED MODULE: ./src/views/ItemView.ts
 
+const BOARD_ITEM_SIZE = 110;
 class ItemView extends Container {
     constructor(config) {
         super();
@@ -35739,6 +35746,9 @@ class ItemView extends Container {
     }
     get area() {
         return this.dropArea;
+    }
+    get itemScale() {
+        return this.sprite.scale;
     }
     setOriginalPosition(x, y) {
         this.originalX = x;
@@ -35767,7 +35777,7 @@ class ItemView extends Container {
     build() {
         this.sprite = Sprite.from(`item_${this.type}.png`);
         this.sprite.anchor.set(0.5);
-        const scale = 110 / this.sprite.width;
+        const scale = BOARD_ITEM_SIZE / this.sprite.width;
         this.sprite.scale.set(scale);
         this.addChild(this.sprite);
     }
@@ -35953,18 +35963,21 @@ class BoardView extends Container {
             b3.empty();
             dist_lego.event.emit(BoardEvents.Match, type, boxIndex);
             this.animateMatch(elements);
-            this.items = this.items.filter((item) => !elements.includes(item));
         }
     }
     animateMatch(elements) {
         const targets = elements.map((el) => el.scale);
+        const positions = elements.map((el) => this.toGlobal(el.position));
+        const type = elements[0].type;
         anime_es({
             targets,
-            x: 0,
-            y: 0,
-            duration: 300,
+            x: 1.2,
+            y: 1.2,
+            duration: 200,
             easing: 'easeInOutSine',
             complete: () => {
+                dist_lego.event.emit(BoardEvents.AnimateMatch, type, positions);
+                this.items = this.items.filter((item) => !elements.includes(item));
                 elements.forEach((el) => {
                     el.emptyArea();
                     el.destroy();
@@ -36170,7 +36183,7 @@ function getItemsAmount(get2Elements = false) {
 ;// CONCATENATED MODULE: ./src/views/ItemCounter.ts
 
 
-const SIZE = 120;
+const COUNTER_ITEM_SIZE = 120;
 class ItemCounter extends Container {
     constructor(itemType) {
         super();
@@ -36181,11 +36194,14 @@ class ItemCounter extends Container {
         return this.itemType;
     }
     getBounds(skipUpdate, rect) {
-        return new Rectangle(0, 0, SIZE, SIZE);
+        return new Rectangle(0, 0, COUNTER_ITEM_SIZE, COUNTER_ITEM_SIZE);
     }
-    updateCounter(value) {
-        this.counter.text = value.toString();
-        fitText(this.counter, SIZE / 2 - 10, SIZE / 2 - 10);
+    updateNextValue(value) {
+        this.nextValue = value;
+    }
+    updateCounter() {
+        this.counter.text = this.nextValue.toString();
+        fitText(this.counter, COUNTER_ITEM_SIZE / 2 - 10, COUNTER_ITEM_SIZE / 2 - 10);
     }
     build() {
         this.buildItem();
@@ -36194,19 +36210,19 @@ class ItemCounter extends Container {
     buildItem() {
         this.sprite = Sprite.from(`item_${this.type}.png`);
         this.sprite.anchor.set(0.5);
-        const scale = SIZE / this.sprite.width;
+        const scale = COUNTER_ITEM_SIZE / this.sprite.width;
         this.sprite.scale.set(scale);
         this.addChild(this.sprite);
     }
     buildCounter() {
         const gr = new Graphics_Graphics();
         gr.beginFill(0xf54284);
-        gr.drawCircle(SIZE / 2, -SIZE / 2, SIZE / 4);
+        gr.drawCircle(COUNTER_ITEM_SIZE / 2, -COUNTER_ITEM_SIZE / 2, COUNTER_ITEM_SIZE / 4);
         gr.endFill();
         this.addChild(gr);
         this.counter = new Text('0', { fill: 0xffffff, fontSize: 40 });
         this.counter.anchor.set(0.5);
-        this.counter.position.set(SIZE / 2, -SIZE / 2);
+        this.counter.position.set(COUNTER_ITEM_SIZE / 2, -COUNTER_ITEM_SIZE / 2);
         this.addChild(this.counter);
     }
 }
@@ -36218,11 +36234,15 @@ class ItemCounter extends Container {
 
 
 
+
+
+
 class CounterView extends Container {
     constructor() {
         super();
         this.counters = [];
         dist_lego.event
+            .on(BoardEvents.AnimateMatch, this.onMatch, this)
             .on(BoardModelEvents.CounterAUpdate, this.onCounterAUpdate, this)
             .on(BoardModelEvents.CounterBUpdate, this.onCounterBUpdate, this)
             .on(BoardModelEvents.CounterCUpdate, this.onCounterCUpdate, this)
@@ -36241,25 +36261,57 @@ class CounterView extends Container {
             this.counters.push(itemCounter);
         });
     }
+    onMatch(type, positions) {
+        const counter = this.counters.find((c) => c.type === type);
+        positions.forEach((pos) => {
+            const { x, y } = this.toLocal(pos);
+            const sprite = Sprite.from(`item_${type}.png`);
+            sprite.anchor.set(0.5);
+            const originalSize = sprite.width;
+            const scale = (BOARD_ITEM_SIZE / sprite.width) * this.scale.x * 1.2;
+            sprite.scale.set(scale);
+            sprite.position.set(x, y);
+            this.addChild(sprite);
+            anime_es({
+                targets: sprite,
+                x: counter.x,
+                y: counter.y,
+                duration: 500,
+                easing: 'easeOutQuad',
+            });
+            anime_es({
+                targets: sprite.scale,
+                x: COUNTER_ITEM_SIZE / originalSize,
+                y: COUNTER_ITEM_SIZE / originalSize,
+                duration: 500,
+                easing: 'easeOutQuad',
+                complete: () => {
+                    this.removeChild(sprite);
+                    sprite.destroy();
+                    counter.updateCounter();
+                },
+            });
+        });
+    }
     onCounterAUpdate(value) {
         var _a;
-        (_a = this.counters.find((c) => c.type === ItemType.A)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+        (_a = this.counters.find((c) => c.type === ItemType.A)) === null || _a === void 0 ? void 0 : _a.updateNextValue(value);
     }
     onCounterBUpdate(value) {
         var _a;
-        (_a = this.counters.find((c) => c.type === ItemType.B)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+        (_a = this.counters.find((c) => c.type === ItemType.B)) === null || _a === void 0 ? void 0 : _a.updateNextValue(value);
     }
     onCounterCUpdate(value) {
         var _a;
-        (_a = this.counters.find((c) => c.type === ItemType.C)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+        (_a = this.counters.find((c) => c.type === ItemType.C)) === null || _a === void 0 ? void 0 : _a.updateNextValue(value);
     }
     onCounterDUpdate(value) {
         var _a;
-        (_a = this.counters.find((c) => c.type === ItemType.D)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+        (_a = this.counters.find((c) => c.type === ItemType.D)) === null || _a === void 0 ? void 0 : _a.updateNextValue(value);
     }
     onCounterEUpdate(value) {
         var _a;
-        (_a = this.counters.find((c) => c.type === ItemType.E)) === null || _a === void 0 ? void 0 : _a.updateCounter(value);
+        (_a = this.counters.find((c) => c.type === ItemType.E)) === null || _a === void 0 ? void 0 : _a.updateNextValue(value);
     }
 }
 
