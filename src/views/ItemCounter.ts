@@ -6,6 +6,7 @@ export const COUNTER_ITEM_SIZE = 120;
 export class ItemCounter extends Container {
     private sprite: Sprite;
     private counter: Text;
+    private nextValue: number;
 
     constructor(private itemType: ItemType) {
         super();
@@ -20,8 +21,12 @@ export class ItemCounter extends Container {
         return new Rectangle(0, 0, COUNTER_ITEM_SIZE, COUNTER_ITEM_SIZE);
     }
 
-    public updateCounter(value: number): void {
-        this.counter.text = value.toString();
+    public updateNextValue(value: number): void {
+        this.nextValue = value;
+    }
+
+    public updateCounter(): void {
+        this.counter.text = this.nextValue.toString();
         fitText(this.counter, COUNTER_ITEM_SIZE / 2 - 10, COUNTER_ITEM_SIZE / 2 - 10);
     }
 

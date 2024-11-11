@@ -68,28 +68,29 @@ export class CounterView extends Container {
                 complete: () => {
                     this.removeChild(sprite);
                     sprite.destroy();
+                    counter.updateCounter();
                 },
             });
         });
     }
 
     private onCounterAUpdate(value: number): void {
-        this.counters.find((c) => c.type === ItemType.A)?.updateCounter(value);
+        this.counters.find((c) => c.type === ItemType.A)?.updateNextValue(value);
     }
 
     private onCounterBUpdate(value: number): void {
-        this.counters.find((c) => c.type === ItemType.B)?.updateCounter(value);
+        this.counters.find((c) => c.type === ItemType.B)?.updateNextValue(value);
     }
 
     private onCounterCUpdate(value: number): void {
-        this.counters.find((c) => c.type === ItemType.C)?.updateCounter(value);
+        this.counters.find((c) => c.type === ItemType.C)?.updateNextValue(value);
     }
 
     private onCounterDUpdate(value: number): void {
-        this.counters.find((c) => c.type === ItemType.D)?.updateCounter(value);
+        this.counters.find((c) => c.type === ItemType.D)?.updateNextValue(value);
     }
 
     private onCounterEUpdate(value: number): void {
-        this.counters.find((c) => c.type === ItemType.E)?.updateCounter(value);
+        this.counters.find((c) => c.type === ItemType.E)?.updateNextValue(value);
     }
 }
