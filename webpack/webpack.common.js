@@ -39,7 +39,7 @@ module.exports = {
     plugins: [
         new CleanWebpackPlugin(),
         new HtmlWebpackPlugin({
-            gameName: 'Pixi TypeScript',
+            gameName: 'Endless Sorting Game',
             template: './index.html',
             filename: 'index.html',
         }),
