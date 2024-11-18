@@ -34150,6 +34150,14 @@ const callIfExists = (callback) => {
         callback();
     }
 };
+const isSquareLikeScreen = () => {
+    const { width, height } = getModalSize();
+    return Math.min(width, height) / Math.max(width, height) > 0.7;
+};
+const isNarrowScreen = () => {
+    const { width, height } = getModalSize();
+    return Math.min(width, height) / Math.max(width, height) < 0.5;
+};
 
 ;// CONCATENATED MODULE: ./src/configs/gridConfigs/BackgroundViewGC.ts
 
@@ -34228,13 +34236,16 @@ const getForegroundGridLandscapeConfig = () => {
         bounds,
         cells: [
             {
-                name: 'logo',
-                bounds: { x: 0.9, y: 0, width: 0.1, height: 0.1 },
+                name: 'suggestion',
+                bounds: { x: 0.1, y: 1.8, width: 0.8, height: 0.15 },
             },
         ],
     };
 };
 const getForegroundGridPortraitConfig = () => {
+    const suggestionBounds = isNarrowScreen()
+        ? { x: 0.1, y: 0.8, width: 0.8, height: 0.15 }
+        : { x: 0, y: 1, width: 1, height: 1 };
     const { width, height } = getModalSize();
     const bounds = { x: 0, y: 0, width, height };
     return {
@@ -34243,14 +34254,15 @@ const getForegroundGridPortraitConfig = () => {
         bounds,
         cells: [
             {
-                name: 'logo',
-                bounds: { x: 0.9, y: 0, width: 0.1, height: 0.1 },
+                name: 'suggestion',
+                bounds: suggestionBounds,
             },
         ],
     };
 };
 
 ;// CONCATENATED MODULE: ./src/views/ForegroundView.ts
+
 
 
 class ForegroundView extends PixiGrid {
@@ -34265,7 +34277,14 @@ class ForegroundView extends PixiGrid {
         super.rebuild(this.getGridConfig());
     }
     build() {
-        //
+        this.addSuggestion();
+    }
+    addSuggestion() {
+        const text = new Text('For better experience we suggest you\nto rotate your phone', {
+            align: 'center',
+            fill: 0xff6f00,
+        });
+        this.setChild('suggestion', text);
     }
 }
 
