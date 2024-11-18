@@ -172,3 +172,13 @@ export const callIfExists = (callback: any): void => {
         callback();
     }
 };
+
+export const isSquareLikeScreen = (): boolean => {
+    const { width, height } = getModalSize();
+    return Math.min(width, height) / Math.max(width, height) > 0.7;
+};
+
+export const isNarrowScreen = (): boolean => {
+    const { width, height } = getModalSize();
+    return Math.min(width, height) / Math.max(width, height) < 0.5;
+};

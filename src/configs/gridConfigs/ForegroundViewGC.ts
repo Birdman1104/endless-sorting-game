@@ -1,4 +1,4 @@
-import { getModalSize, lp } from '../../Utils';
+import { getModalSize, isNarrowScreen, lp } from '../../Utils';
 
 export const getForegroundGridConfig = () => {
     return lp(getForegroundGridLandscapeConfig, getForegroundGridPortraitConfig).call(null);
@@ -14,14 +14,18 @@ const getForegroundGridLandscapeConfig = () => {
         bounds,
         cells: [
             {
-                name: 'logo',
-                bounds: { x: 0.9, y: 0, width: 0.1, height: 0.1 },
+                name: 'suggestion',
+                bounds: { x: 0.1, y: 1.8, width: 0.8, height: 0.15 },
             },
         ],
     };
 };
 
 const getForegroundGridPortraitConfig = () => {
+    const suggestionBounds = isNarrowScreen()
+        ? { x: 0.1, y: 0.8, width: 0.8, height: 0.15 }
+        : { x: 0, y: 1, width: 1, height: 1 };
+
     const { width, height } = getModalSize();
     const bounds = { x: 0, y: 0, width, height };
 
@@ -31,8 +35,8 @@ const getForegroundGridPortraitConfig = () => {
         bounds,
         cells: [
             {
-                name: 'logo',
-                bounds: { x: 0.9, y: 0, width: 0.1, height: 0.1 },
+                name: 'suggestion',
+                bounds: suggestionBounds,
             },
         ],
     };
